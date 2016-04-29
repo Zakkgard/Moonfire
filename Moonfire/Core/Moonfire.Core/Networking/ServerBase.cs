@@ -67,7 +67,7 @@
             }
         }
 
-        protected virtual void DisconnectClient(IClient client, bool forced = true)
+        public virtual void DisconnectClient(IClient client, bool forced = true)
         {
             this.RemoveClient(client);
 
@@ -104,23 +104,13 @@
 
         protected virtual bool OnClientConnected(IClient client)
         {
-            ClientConnectedHandler handler = this.ClientConnected;
-            if (handler != null)
-            {
-                handler(client);
-            }
-
+            this.ClientConnected?.Invoke(client);
             return true;
         }
 
         protected virtual void OnClientDisconnected(IClient client, bool forced)
         {
-            ClientDisconnectedHandler handler = this.ClientDisconnected;
-            if (handler != null)
-            {
-                handler(client, forced);
-            }
-
+            this.ClientDisconnected?.Invoke(client, forced);
             client.Dispose();
         }
 
@@ -167,13 +157,22 @@
             }
             else
             {
-                acceptArgs = new SocketAsyncEventArgs();
-                acceptArgs.Completed += AcceptCompleted;
+                acceptArgs = SocketArgsPool.GetSocketArgs();
+                acceptArgs.Completed += this.AcceptCompleted;
             }
 
-            if (this.Listener.AcceptAsync(acceptArgs))
+            try
             {
-                this.ProcessAccept(acceptArgs);
+                if (this.Listener.AcceptAsync(acceptArgs))
+                {
+                    this.ProcessAccept(acceptArgs);
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log Exception
+                acceptArgs.Completed -= this.AcceptCompleted;
+                SocketArgsPool.ReleaseSocketArgs(acceptArgs);
             }
         }
 

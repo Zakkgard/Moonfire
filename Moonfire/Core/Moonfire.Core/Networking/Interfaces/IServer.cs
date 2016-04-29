@@ -4,6 +4,6 @@
 
     public interface IServer : IDisposable
     {
-
+        void DisconnectClient(IClient client, bool forced);
     }
 }

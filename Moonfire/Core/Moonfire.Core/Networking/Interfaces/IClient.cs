@@ -7,7 +7,7 @@
     public interface IClient : IDisposable
     {
 
-        ServerBase Server { get; }
+        IServer Server { get; set; }
 
         /// <summary>
         /// Gets the IP address of the client.
@@ -30,18 +30,6 @@
         /// Begins asynchronous TCP receiving for this client.
         /// </summary>
 		void BeginReceive();
-
-        /// <summary>
-        /// Asynchronously sends a packet of data to the client.
-        /// </summary>
-        /// <param name="packet">An array of bytes containing the packet to be sent.</param>
-        void Send(byte[] packet);
-
-        /// <summary>
-        /// Asynchronously sends a copy of the given packet
-        /// </summary>
-        /// <param name="packet">An array of bytes containing the packet to be sent.</param>
-        void SendCopy(byte[] packet);
 
         /// <summary>
         /// Asynchronously sends a packet of data to the client.

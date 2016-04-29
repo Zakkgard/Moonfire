@@ -40,10 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\ObjectPool{T}.cs" />
+    <Compile Include="Networking\BufferManager.cs" />
     <Compile Include="Networking\ClientBase.cs" />
     <Compile Include="Networking\Interfaces\IClient.cs" />
     <Compile Include="Networking\Interfaces\IServer.cs" />
     <Compile Include="Networking\ServerBase.cs" />
+    <Compile Include="Networking\SocketArgsPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

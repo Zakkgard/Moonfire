@@ -1,18 +1,15 @@
 ﻿namespace Moonfire.Core.Networking
 {
-    using Interfaces;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Sockets;
-    using System.Text;
-    using System.Threading.Tasks;
     using System.Net;
+    using System.Net.Sockets;
+
+    using Moonfire.Core.Networking.Interfaces;
 
     public abstract class ClientBase : IClient
     {
         // TODO: Get logger instance
-        protected byte[] buffer = new byte[1024];
+        protected static readonly BufferManager manager = new BufferManager(8192, 512);
         protected Socket tcpSocket;
 
         protected ClientBase(IServer server)
@@ -20,12 +17,8 @@
             this.tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             this.Server = server;
         }
-
-        protected uint BytesReceived { get; private set; }
-
-        protected uint BytesSent { get; private set; }
-
-        protected Socket TcpSocket
+        
+        public Socket TcpSocket
         {
             get
             {
@@ -46,7 +39,7 @@
             }
         }
 
-        protected IServer Server { get; set; }
+        public IServer Server { get; set; }
 
         public IPAddress ClientAddress
         {
@@ -63,6 +56,10 @@
                 return this.TcpSocket != null && this.TcpSocket.RemoteEndPoint != null ? ((IPEndPoint)this.TcpSocket.RemoteEndPoint).Port : -1;
             }
         }
+
+        protected uint BytesReceived { get; private set; }
+
+        protected uint BytesSent { get; private set; }
 
         public bool IsConnected
         {
@@ -81,8 +78,8 @@
         {
             if (this.IsConnected)
             {
-                var socketArgs = new SocketAsyncEventArgs();
-                socketArgs.SetBuffer();
+                var socketArgs = SocketArgsPool.GetSocketArgs();
+                manager.SetBuffer(socketArgs);
                 socketArgs.UserToken = this;
                 socketArgs.Completed += this.ReceiveAsyncComplete;
 
@@ -107,12 +104,109 @@
                     {
                         this.BytesReceived += (uint)args.BytesTransferred;
                     }
+
+                    if (this.OnReceive(args.Buffer))
+                    {
+                        manager.FreeBuffer(args);
+                    }
+
+                    this.ResumeReceive();
                 }
             }
             catch (Exception)
             {
+                // TODO: Log Exception
+                this.Server.DisconnectClient(this, true);
+            }
+            finally
+            {
+                args.Completed -= this.ReceiveAsyncComplete;
+                SocketArgsPool.ReleaseSocketArgs(args);
+            }
+        }
 
-                throw;
+        public abstract bool OnReceive(byte[] buffer);
+
+        private void ReceiveAsyncComplete(object sender, SocketAsyncEventArgs args)
+        {
+            this.ProcessReceive(args);
+        }
+
+        public virtual void Send(byte[] packet, int offset, int length)
+        {
+            if (this.TcpSocket != null && this.TcpSocket.Connected)
+            {
+                var args = SocketArgsPool.GetSocketArgs();
+                if (args != null)
+                {
+                    args.Completed += SendAsyncComplete;
+                    args.SetBuffer(packet, offset, length);
+                    args.UserToken = this;
+                    this.TcpSocket.SendAsync(args);
+
+                    unchecked
+                    {
+                        this.BytesSent += (uint)length;
+                    }
+                }
+                else
+                {
+                    // TODO: Log an error
+                }
+            }
+        }
+
+        private static void SendAsyncComplete(object sender, SocketAsyncEventArgs args)
+        {
+            args.Completed -= SendAsyncComplete;
+            SocketArgsPool.ReleaseSocketArgs(args);
+        }
+
+        public void Connect(string host, int port)
+        {
+            Connect(IPAddress.Parse(host), port);
+        }
+
+        public void Connect(IPAddress addr, int port)
+        {
+            if (this.TcpSocket != null)
+            {
+                if (this.TcpSocket.Connected)
+                {
+                    this.TcpSocket.Disconnect(true);
+                }
+
+                this.TcpSocket.Connect(addr, port);
+
+                this.BeginReceive();
+            }
+        }
+
+        ~ClientBase()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (this.TcpSocket != null && this.TcpSocket.Connected)
+            {
+                try
+                {
+                    this.TcpSocket.Shutdown(SocketShutdown.Both);
+                    this.TcpSocket.Close();
+                    this.TcpSocket = null;
+                }
+                catch (Exception ex)
+                {
+                    // TODO: Log and handle exceptions
+                }
             }
         }
     }
