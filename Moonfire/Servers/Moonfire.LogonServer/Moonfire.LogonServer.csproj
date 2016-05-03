@@ -54,11 +54,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Moonfire.Core.Constants\Moonfire.Core.Constants.csproj">
-      <Project>{917B4D2C-BF64-4DDB-8BDF-2A27C1ABB54F}</Project>
+      <Project>{917b4d2c-bf64-4ddb-8bdf-2a27c1abb54f}</Project>
       <Name>Moonfire.Core.Constants</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Moonfire.Core\Moonfire.Core.csproj">
-      <Project>{3D564309-707E-4950-90B6-71E18D178223}</Project>
+      <Project>{3d564309-707e-4950-90b6-71e18d178223}</Project>
       <Name>Moonfire.Core</Name>
     </ProjectReference>
   </ItemGroup>

@@ -16,9 +16,24 @@
         // TODO: get logger instance
 
         protected virtual ISet<IClient> Clients { get; set; }
+
         public virtual IPEndPoint EndPoint { get; set; }
-        protected virtual Socket Listener { get; set; }
-        public virtual bool IsRunning { get; set; }
+
+        protected virtual TcpListener Listener { get; set; }
+
+        public virtual bool IsRunning
+        {
+            get
+            {
+                if (this.Listener != null)
+                {
+                    return this.Listener.Server.IsBound;
+                }
+
+                return false;
+            }
+        }
+
         protected virtual int MaximumPendingConnections { get; set; }
         protected Semaphore enforcer = new Semaphore(10, 10);
 
@@ -39,7 +54,6 @@
             {
                 if (!this.IsRunning)
                 {
-                    this.IsRunning = true;
                     this.StartListening();
                 }
             }
@@ -55,7 +69,6 @@
         {
             if (this.IsRunning)
             {
-                this.IsRunning = false;
                 this.RemoveAllClients();
                 this.StopListening();
             }
@@ -122,14 +135,13 @@
 
         protected void StartListening()
         {
-            if (this.IsRunning)
+            if (!this.IsRunning)
             {
-                this.Listener = new Socket(this.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                this.Listener.NoDelay = true;
+                this.Listener = new TcpListener(this.EndPoint.Address, this.EndPoint.Port);
 
                 try
                 {
-                    this.Listener.Bind(this.EndPoint);
+                    this.Listener.Start();
                 }
                 catch (Exception e)
                 {
@@ -137,8 +149,8 @@
                     Console.WriteLine(e.Message);
                 }
 
-                this.Listener.Listen(this.MaximumPendingConnections);
-                this.StartAccepting(null);
+                //this.Listener.Listen(this.MaximumPendingConnections);
+                this.StartAccepting();
             }
         }
 
@@ -146,7 +158,7 @@
         {
             try
             {
-                this.Listener.Close();
+                this.Listener.Stop();
             }
             catch (Exception e)
             {
@@ -159,68 +171,83 @@
             this.Listener = null;
         }
 
-        protected void StartAccepting(SocketAsyncEventArgs acceptArgs)
+        protected void StartAccepting()
         {
-            if (acceptArgs == null)
-            {
-                acceptArgs = new SocketAsyncEventArgs();
-                acceptArgs.Completed += new EventHandler<SocketAsyncEventArgs>(this.AcceptCompleted);
-            }
-            else
-            {
-                acceptArgs.AcceptSocket = null;
-            }
-            
-            var willRaiseEvent = this.Listener.AcceptAsync(acceptArgs);
-            if (!willRaiseEvent)
-            {
-                this.ProcessAccept(acceptArgs);
-            }
+            //if (acceptArgs == null)
+            //{
+            //    acceptArgs = new SocketAsyncEventArgs();
+            //    acceptArgs.Completed += new EventHandler<SocketAsyncEventArgs>(this.AcceptCompleted);
+            //}
+            //else
+            //{
+            //    acceptArgs.AcceptSocket = null;
+            //}
+
+            //var willRaiseEvent = this.Listener.AcceptAsync(acceptArgs);
+            //if (!willRaiseEvent)
+            //{
+            //    this.ProcessAccept(acceptArgs);
+            //}
+            new Thread(this.ProcessAccept).Start(200);
         }
 
-        private void AcceptCompleted(object sender, SocketAsyncEventArgs e)
-        {
-            this.ProcessAccept(e);
-        }
+        //private void AcceptCompleted(object sender, SocketAsyncEventArgs e)
+        //{
+        //    this.ProcessAccept(e);
+        //}
 
-        private void ProcessAccept(SocketAsyncEventArgs args)
+        private async void ProcessAccept(object delay)
         {
-            try
+            while (this.IsRunning)
             {
-                if (!this.IsRunning)
-                {
-                    return;
-                }
+                Thread.Sleep((int) delay);
 
-                IClient client = this.CreateClient();
-                client.TcpSocket = args.AcceptSocket;
-                client.BeginReceive();
-                
-                this.StartAccepting(args);
-
-                if (this.OnClientConnected(client))
+                if (this.Listener.Pending())
                 {
-                    lock (this.Clients)
+                    IClient client = this.CreateClient();
+                    client.TcpSocket = await this.Listener.AcceptSocketAsync();
+                    if (client.TcpSocket != null)
                     {
-                        this.Clients.Add(client);
+                        client.BeginReceive();
                     }
                 }
-                else
-                {
-                    client.TcpSocket.Shutdown(SocketShutdown.Both);
-                    client.TcpSocket.Close();
-                }
             }
-            catch (SocketException e)
-            {
-                // TODO: Log Exception
-                Console.WriteLine(e.Message);
-            }
-            catch (Exception e)
-            {
-                // TODO: Log Exception
-                Console.WriteLine(e.Message);
-            }
+            //try
+            //{
+            //    if (!this.IsRunning)
+            //    {
+            //        return;
+            //    }
+
+            //    IClient client = this.CreateClient();
+            //    client.TcpSocket = args.AcceptSocket;
+            //    client.BeginReceive();
+                
+            //    this.StartAccepting(args);
+
+            //    if (this.OnClientConnected(client))
+            //    {
+            //        lock (this.Clients)
+            //        {
+            //            this.Clients.Add(client);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        client.TcpSocket.Shutdown(SocketShutdown.Both);
+            //        client.TcpSocket.Close();
+            //    }
+            //}
+            //catch (SocketException e)
+            //{
+            //    // TODO: Log Exception
+            //    Console.WriteLine(e.Message);
+            //}
+            //catch (Exception e)
+            //{
+            //    // TODO: Log Exception
+            //    Console.WriteLine(e.Message);
+            //}
         }
 
         public void Dispose()
