@@ -4,6 +4,7 @@
     using System.Net;
     using System.Net.Sockets;
 
+    using Moonfire.Core.Cryptography;
     using Moonfire.Core.Networking.Interfaces;
 
     public abstract class ClientBase : IClient
@@ -14,7 +15,7 @@
 
         protected ClientBase(IServer server)
         {
-            this.tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            this.TcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             this.Server = server;
         }
         
@@ -26,7 +27,7 @@
             }
             set
             {
-                if (this.TcpSocket != null && this.TcpSocket.Connected)
+                if (this.tcpSocket != null && this.tcpSocket.Connected)
                 {
                     this.TcpSocket.Shutdown(SocketShutdown.Both);
                     this.TcpSocket.Close();
@@ -69,6 +70,8 @@
             }
         }
 
+        public abstract Authenticator Authenticator { get; set; }
+
         public void BeginReceive()
         {
             this.ResumeReceive();
@@ -81,9 +84,10 @@
                 var socketArgs = SocketArgsPool.GetSocketArgs();
                 manager.SetBuffer(socketArgs);
                 socketArgs.UserToken = this;
-                socketArgs.Completed += this.ReceiveAsyncComplete;
+                socketArgs.Completed += new EventHandler<SocketAsyncEventArgs>(this.ReceiveAsyncComplete);
 
-                if (this.TcpSocket.ReceiveAsync(socketArgs))
+                var willRaiseEvent = this.TcpSocket.ReceiveAsync(socketArgs);
+                if (!willRaiseEvent)
                 {
                     this.ProcessReceive(socketArgs);
                 }
@@ -113,10 +117,11 @@
                     this.ResumeReceive();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // TODO: Log Exception
                 this.Server.DisconnectClient(this, true);
+                Console.WriteLine(e.Message);
             }
             finally
             {
@@ -203,11 +208,14 @@
                     this.TcpSocket.Close();
                     this.TcpSocket = null;
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
                     // TODO: Log and handle exceptions
+                    Console.WriteLine(e.Message);
                 }
             }
         }
+
+        public abstract void Send(OutgoingAuthPacket packet);
     }
 }

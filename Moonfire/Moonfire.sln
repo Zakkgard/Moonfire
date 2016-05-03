@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moonfire.WorldServer", "Ser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moonfire.LogonServer", "Servers\Moonfire.LogonServer\Moonfire.LogonServer.csproj", "{F9606EC8-8741-45F7-BBBF-A26265B9D533}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moonfire.Core.Constants", "Core\Moonfire.Core.Constants\Moonfire.Core.Constants.csproj", "{917B4D2C-BF64-4DDB-8BDF-2A27C1ABB54F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{F9606EC8-8741-45F7-BBBF-A26265B9D533}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9606EC8-8741-45F7-BBBF-A26265B9D533}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9606EC8-8741-45F7-BBBF-A26265B9D533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{917B4D2C-BF64-4DDB-8BDF-2A27C1ABB54F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{917B4D2C-BF64-4DDB-8BDF-2A27C1ABB54F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{917B4D2C-BF64-4DDB-8BDF-2A27C1ABB54F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{917B4D2C-BF64-4DDB-8BDF-2A27C1ABB54F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,5 +49,6 @@ Global
 		{3D564309-707E-4950-90B6-71E18D178223} = {A01FB14F-4030-46D8-A430-30CD7C4AB4F5}
 		{8D88BA6E-2814-494C-A9AE-21B55F46FCC8} = {2CE2FC10-DEC8-4732-9183-7383070E7353}
 		{F9606EC8-8741-45F7-BBBF-A26265B9D533} = {2CE2FC10-DEC8-4732-9183-7383070E7353}
+		{917B4D2C-BF64-4DDB-8BDF-2A27C1ABB54F} = {A01FB14F-4030-46D8-A430-30CD7C4AB4F5}
 	EndGlobalSection
 EndGlobal

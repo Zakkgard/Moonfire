@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F9606EC8-8741-45F7-BBBF-A26265B9D533}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{917B4D2C-BF64-4DDB-8BDF-2A27C1ABB54F}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Moonfire.LogonServer</RootNamespace>
-    <AssemblyName>Moonfire.LogonServer</AssemblyName>
+    <RootNamespace>Moonfire.Core.Constants</RootNamespace>
+    <AssemblyName>Moonfire.Core.Constants</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,24 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthClient.cs" />
-    <Compile Include="AuthenticationHandler.cs" />
-    <Compile Include="LogonServer.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Auth\AuthenticationCmd.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\Moonfire.Core.Constants\Moonfire.Core.Constants.csproj">
-      <Project>{917B4D2C-BF64-4DDB-8BDF-2A27C1ABB54F}</Project>
-      <Name>Moonfire.Core.Constants</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\Moonfire.Core\Moonfire.Core.csproj">
-      <Project>{3D564309-707E-4950-90B6-71E18D178223}</Project>
-      <Name>Moonfire.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

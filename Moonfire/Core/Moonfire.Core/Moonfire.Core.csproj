@@ -41,16 +41,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\ObjectPool{T}.cs" />
+    <Compile Include="Cryptography\Authenticator.cs" />
+    <Compile Include="Cryptography\BigInteger.cs" />
+    <Compile Include="Cryptography\HashUtilities.cs" />
+    <Compile Include="Cryptography\SRP6.cs" />
+    <Compile Include="Cryptography\SRPParameters.cs" />
     <Compile Include="Networking\BufferManager.cs" />
     <Compile Include="Networking\ClientBase.cs" />
+    <Compile Include="Networking\IncomingAuthPacket.cs" />
+    <Compile Include="Networking\IncomingPacket.cs" />
     <Compile Include="Networking\Interfaces\IClient.cs" />
     <Compile Include="Networking\Interfaces\IServer.cs" />
+    <Compile Include="Networking\OutgoingAuthPacket.cs" />
+    <Compile Include="Networking\OutgoingPacket.cs" />
+    <Compile Include="Networking\PacketWriter.cs" />
     <Compile Include="Networking\ServerBase.cs" />
     <Compile Include="Networking\SocketArgsPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Cryptography\" />
+    <ProjectReference Include="..\Moonfire.Core.Constants\Moonfire.Core.Constants.csproj">
+      <Project>{917B4D2C-BF64-4DDB-8BDF-2A27C1ABB54F}</Project>
+      <Name>Moonfire.Core.Constants</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

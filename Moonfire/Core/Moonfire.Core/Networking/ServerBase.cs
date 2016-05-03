@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Sockets;
+    using System.Threading;
 
     using Moonfire.Core.Networking.Interfaces;
 
@@ -15,10 +16,12 @@
         // TODO: get logger instance
 
         protected virtual ISet<IClient> Clients { get; set; }
-        protected virtual IPEndPoint EndPoint { get; set; }
+        public virtual IPEndPoint EndPoint { get; set; }
         protected virtual Socket Listener { get; set; }
-        protected virtual bool IsRunning { get; set; }
+        public virtual bool IsRunning { get; set; }
         protected virtual int MaximumPendingConnections { get; set; }
+        protected Semaphore enforcer = new Semaphore(10, 10);
+
         public int ClientCount
         {
             get
@@ -30,7 +33,7 @@
         public event ClientConnectedHandler ClientConnected;
         public event ClientDisconnectedHandler ClientDisconnected;
 
-        protected virtual void Start()
+        public virtual void Start()
         {
             try
             {
@@ -40,9 +43,10 @@
                     this.StartListening();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // TODO: log exception
+                Console.WriteLine(e.Message);
                 this.Stop();
             }
         }
@@ -76,9 +80,10 @@
                 this.OnClientDisconnected(client, forced);
                 client.Dispose();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // TODO: Log exception
+                Console.WriteLine(e.Message);
             }
         }
 
@@ -92,9 +97,10 @@
                     {
                         this.OnClientDisconnected(client, true);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         // Log Exception
+                        Console.WriteLine(e.Message);
                     }
                 }
 
@@ -116,17 +122,19 @@
 
         protected void StartListening()
         {
-            if (!this.IsRunning)
+            if (this.IsRunning)
             {
                 this.Listener = new Socket(this.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                this.Listener.NoDelay = true;
 
                 try
                 {
                     this.Listener.Bind(this.EndPoint);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     // TODO: Log Exception
+                    Console.WriteLine(e.Message);
                 }
 
                 this.Listener.Listen(this.MaximumPendingConnections);
@@ -140,9 +148,12 @@
             {
                 this.Listener.Close();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
+
                 // TODO: Log Exception
+
+                Console.WriteLine(e.Message);
             }
 
             this.Listener = null;
@@ -150,29 +161,20 @@
 
         protected void StartAccepting(SocketAsyncEventArgs acceptArgs)
         {
-            if (acceptArgs != null)
+            if (acceptArgs == null)
             {
-                // clear socket for reuse
-                acceptArgs.AcceptSocket = null;
+                acceptArgs = new SocketAsyncEventArgs();
+                acceptArgs.Completed += new EventHandler<SocketAsyncEventArgs>(this.AcceptCompleted);
             }
             else
             {
-                acceptArgs = SocketArgsPool.GetSocketArgs();
-                acceptArgs.Completed += this.AcceptCompleted;
+                acceptArgs.AcceptSocket = null;
             }
-
-            try
+            
+            var willRaiseEvent = this.Listener.AcceptAsync(acceptArgs);
+            if (!willRaiseEvent)
             {
-                if (this.Listener.AcceptAsync(acceptArgs))
-                {
-                    this.ProcessAccept(acceptArgs);
-                }
-            }
-            catch (Exception ex)
-            {
-                // TODO: Log Exception
-                acceptArgs.Completed -= this.AcceptCompleted;
-                SocketArgsPool.ReleaseSocketArgs(acceptArgs);
+                this.ProcessAccept(acceptArgs);
             }
         }
 
@@ -193,7 +195,7 @@
                 IClient client = this.CreateClient();
                 client.TcpSocket = args.AcceptSocket;
                 client.BeginReceive();
-
+                
                 this.StartAccepting(args);
 
                 if (this.OnClientConnected(client))
@@ -212,10 +214,12 @@
             catch (SocketException e)
             {
                 // TODO: Log Exception
+                Console.WriteLine(e.Message);
             }
             catch (Exception e)
             {
                 // TODO: Log Exception
+                Console.WriteLine(e.Message);
             }
         }
 
