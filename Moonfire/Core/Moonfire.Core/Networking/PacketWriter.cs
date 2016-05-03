@@ -6,7 +6,7 @@
     using System.Text;
 
     using Moonfire.Core.Cryptography;
-
+    
     public abstract class PacketWriter : BinaryWriter
     {
         public static Encoding DefaultEncoding = Encoding.UTF8;

@@ -27,7 +27,7 @@
 
         bool IsConnected { get; }
 
-        Authenticator Authenticator { get; }
+        Authenticator Authenticator { get; set; }
 
         /// <summary>
         /// Begins asynchronous TCP receiving for this client.

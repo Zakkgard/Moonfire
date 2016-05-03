@@ -44,8 +44,7 @@
     <Compile Include="Cryptography\Authenticator.cs" />
     <Compile Include="Cryptography\BigInteger.cs" />
     <Compile Include="Cryptography\HashUtilities.cs" />
-    <Compile Include="Cryptography\SRP6.cs" />
-    <Compile Include="Cryptography\SRPParameters.cs" />
+    <Compile Include="Cryptography\SecureRemotePassword.cs" />
     <Compile Include="Networking\BufferManager.cs" />
     <Compile Include="Networking\ClientBase.cs" />
     <Compile Include="Networking\IncomingAuthPacket.cs" />

@@ -91,7 +91,7 @@
             try
             {
                 this.OnClientDisconnected(client, forced);
-                client.Dispose();
+                client.TcpSocket.Close();
             }
             catch (Exception e)
             {

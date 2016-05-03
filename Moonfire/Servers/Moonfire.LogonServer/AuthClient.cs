@@ -22,12 +22,7 @@
             var packet = new IncomingAuthPacket(buffer, buffer.Length);
             Console.WriteLine("Received: {0}", packet.packetId.ToString());
 
-            packet.Position = 33;
-            var username = packet.ReadPascalString();
-            var identityHash = SRP6.GenerateCredentialsHash(username, "changeme");
-            this.Authenticator = new Authenticator(new SRP6(username, identityHash));
-
-            AuthenticationHandler.SendAuthChallenge(this);
+            AuthenticationHandler.ProcessPacket(this, packet);
 
             return true;
         }

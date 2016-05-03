@@ -4,14 +4,14 @@
 
     public class Authenticator
     {
-        private readonly SRP6 srp;
+        private readonly SecureRemotePassword srp;
 
-        public Authenticator(SRP6 srp)
+        public Authenticator(SecureRemotePassword srp)
         {
             this.srp = srp;
         }
 
-        public SRP6 SRP
+        public SecureRemotePassword SRP
         {
             get
             {
@@ -21,11 +21,13 @@
 
         public void WriteServerChallenge(PacketWriter packet)
         {
-            packet.WriteBigInt(this.SRP.PublicEphemeralB);
-            packet.WriteBigIntLength(this.SRP.Generator, 1);
-            packet.WriteBigIntLength(this.SRP.Modulus, 32);
-            packet.WriteBigInt(this.SRP.Salt);
-            packet.WriteBigInt(this.SRP.Unknown);
+            packet.WriteBigInt(SRP.PublicEphemeralValueB, 32);
+            packet.WriteBigIntLength(SRP.Generator, 1);
+
+            // We will pad this out to 32 bytes.
+            packet.WriteBigIntLength(SRP.Modulus, 32);
+            packet.WriteBigInt(SRP.Salt);
+            packet.WriteBigInt(SecureRemotePassword.RandomNumber(16));
         }
 
     }

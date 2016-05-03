@@ -79,22 +79,16 @@
 
         private void ResumeReceive()
         {
-            if (this.IsConnected)
-            {
-                var socketArgs = SocketArgsPool.GetSocketArgs();
-                manager.SetBuffer(socketArgs);
-                socketArgs.UserToken = this;
-                socketArgs.Completed += new EventHandler<SocketAsyncEventArgs>(this.ReceiveAsyncComplete);
+            var socketArgs = SocketArgsPool.GetSocketArgs();
+            manager.SetBuffer(socketArgs);
+            socketArgs.UserToken = this.TcpSocket;
+            socketArgs.Completed += this.ProcessReceived;
+            socketArgs.SocketFlags = SocketFlags.None;
 
-                var willRaiseEvent = this.TcpSocket.ReceiveAsync(socketArgs);
-                if (!willRaiseEvent)
-                {
-                    this.ProcessReceive(socketArgs);
-                }
-            }
+            this.TcpSocket.ReceiveAsync(socketArgs);
         }
 
-        private void ProcessReceive(SocketAsyncEventArgs args)
+        private void ProcessReceived(object sender, SocketAsyncEventArgs args)
         {
             try
             {
@@ -104,38 +98,35 @@
                 }
                 else
                 {
-                    unchecked
-                    {
-                        this.BytesReceived += (uint)args.BytesTransferred;
-                    }
-
                     if (this.OnReceive(args.Buffer))
                     {
                         manager.FreeBuffer(args);
                     }
 
+                    //this.OnReceive(args.Buffer);
+
                     this.ResumeReceive();
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 // TODO: Log Exception
                 this.Server.DisconnectClient(this, true);
-                Console.WriteLine(e.Message);
+                Console.WriteLine(ex.Message);
             }
             finally
             {
-                args.Completed -= this.ReceiveAsyncComplete;
+                args.Completed -= this.ProcessReceived;
                 SocketArgsPool.ReleaseSocketArgs(args);
             }
         }
 
         public abstract bool OnReceive(byte[] buffer);
 
-        private void ReceiveAsyncComplete(object sender, SocketAsyncEventArgs args)
-        {
-            this.ProcessReceive(args);
-        }
+        //private void ReceiveAsyncComplete(object sender, SocketAsyncEventArgs args)
+        //{
+        //    this.ProcessReceive(args);
+        //}
 
         public virtual void Send(byte[] packet, int offset, int length)
         {
@@ -146,7 +137,8 @@
                 {
                     args.Completed += SendAsyncComplete;
                     args.SetBuffer(packet, offset, length);
-                    args.UserToken = this;
+                    args.UserToken = this.TcpSocket;
+                    args.SocketFlags = SocketFlags.None;
                     this.TcpSocket.SendAsync(args);
 
                     unchecked
@@ -161,9 +153,9 @@
             }
         }
 
-        private static void SendAsyncComplete(object sender, SocketAsyncEventArgs args)
+        private void SendAsyncComplete(object sender, SocketAsyncEventArgs args)
         {
-            args.Completed -= SendAsyncComplete;
+            args.Completed -= this.SendAsyncComplete;
             SocketArgsPool.ReleaseSocketArgs(args);
         }
 
