@@ -13,14 +13,44 @@
         private static Dictionary<AuthenticationCmd, Action<IClient, IncomingAuthPacket>> authActions = new Dictionary<AuthenticationCmd, Action<IClient, IncomingAuthPacket>>
         {
             { AuthenticationCmd.CMD_AUTH_LOGON_CHALLENGE, HandleLogonChallenge },
-            { AuthenticationCmd.CMD_AUTH_LOGON_PROOF, HandleLogonProof }
+            { AuthenticationCmd.CMD_AUTH_LOGON_PROOF, HandleLogonProof },
+            { AuthenticationCmd.CMD_REALM_LIST, HandleRealmList }
         };
+
+        private static void HandleRealmList(IClient client, IncomingAuthPacket packet)
+        {
+            LoadRealmList(client);
+        }
+
+        private static void LoadRealmList(IClient client)
+        {
+            var packet = new OutgoingAuthPacket(AuthenticationCmd.CMD_REALM_LIST);
+
+            packet.Position += 2;
+            packet.Write(0);
+            packet.Write((byte)1);
+
+            packet.Write(0); // server type
+            packet.Write((byte)0x20); // server flags
+            packet.WriteCString("AUUUB"); // server name
+            packet.WriteCString("127.0.0.1:8085"); // server ip:port
+            packet.WriteFloat(1.7f); // server population
+            packet.Write((byte)0); // char count
+            packet.Write((byte)0);
+            packet.Write((byte)0);
+            packet.Write(0x0002);
+            
+            packet.Position = 1;
+            packet.Write((short)packet.TotalLength - 3);
+
+            client.Send(packet);
+        }
 
         private static void HandleLogonProof(IClient client, IncomingAuthPacket packet)
         {
             client.Authenticator.SRP.PublicEphemeralValueA = packet.ReadBigInteger(32);
             BigInteger proof = packet.ReadBigInteger(20);
-            Console.WriteLine(client.Authenticator.SRP.IsClientProofValid(proof));
+            //Console.WriteLine(client.Authenticator.SRP.IsClientProofValid(proof));
 
             SendLogonProofReply(client);
         }

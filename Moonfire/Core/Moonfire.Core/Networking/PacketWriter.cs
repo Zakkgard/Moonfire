@@ -17,6 +17,18 @@
 
         }
 
+        public int Position
+        {
+            get
+            {
+                return (int)base.BaseStream.Position;
+            }
+            set
+            {
+                base.BaseStream.Position = value;
+            }
+        }
+
         #region WriteByte
         
         public virtual void WriteByte(byte val)
