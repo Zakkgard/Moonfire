@@ -7,8 +7,8 @@
     using System.Text;
 
     using Moonfire.Core.Cryptography;
-
-    public abstract class IncomingPacket : BinaryReader
+    using Interfaces;
+    public abstract class IncomingPacket : BinaryReader, IPacket
     {
         public static Encoding DefaultEncoding = Encoding.UTF8;
 

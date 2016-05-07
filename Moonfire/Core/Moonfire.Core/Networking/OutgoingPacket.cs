@@ -1,4 +1,5 @@
 ﻿using Moonfire.Core.Constants.Auth;
+using Moonfire.Core.Networking.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace Moonfire.Core.Networking
 {
-    public class OutgoingPacket : PacketWriter
+    public class OutgoingPacket : PacketWriter, IOutgoingPacket
     {
-        public AuthenticationCmd packetId;
-
         public OutgoingPacket(AuthenticationCmd packetId)
             : base(new MemoryStream())
         {
-            this.packetId = packetId;
+            this.PacketId = packetId;
         }
+
+        public AuthenticationCmd PacketId { get; set; }
 
         public int TotalLength
         {

@@ -26,9 +26,7 @@
         Socket TcpSocket { get; set; }
 
         bool IsConnected { get; }
-
-        Authenticator Authenticator { get; set; }
-
+        
         /// <summary>
         /// Begins asynchronous TCP receiving for this client.
         /// </summary>
@@ -46,7 +44,7 @@
         /// Asynchronously sends a packet of auth data to the client.
         /// </summary>
         /// <param name="packet">An instance of the auth packet to be sent.</param>
-		void Send(OutgoingAuthPacket packet);
+		void Send(IOutgoingPacket packet);
 
         /// <summary>
         /// Connects the client to the server at the specified address and port.

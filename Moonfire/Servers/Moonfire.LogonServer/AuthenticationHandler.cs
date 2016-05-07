@@ -10,52 +10,52 @@
 
     public static class AuthenticationHandler
     {
-        private static Dictionary<AuthenticationCmd, Action<IClient, IncomingAuthPacket>> authActions = new Dictionary<AuthenticationCmd, Action<IClient, IncomingAuthPacket>>
+        private static Dictionary<AuthenticationCmd, Action<IAuthClient, IncomingAuthPacket>> authActions = new Dictionary<AuthenticationCmd, Action<IAuthClient, IncomingAuthPacket>>
         {
             { AuthenticationCmd.CMD_AUTH_LOGON_CHALLENGE, HandleLogonChallenge },
             { AuthenticationCmd.CMD_AUTH_LOGON_PROOF, HandleLogonProof },
             { AuthenticationCmd.CMD_REALM_LIST, HandleRealmList }
         };
 
-        private static void HandleRealmList(IClient client, IncomingAuthPacket packet)
+        private static void HandleRealmList(IAuthClient client, IncomingAuthPacket packet)
         {
             LoadRealmList(client);
         }
 
-        private static void LoadRealmList(IClient client)
+        private static void LoadRealmList(IAuthClient client)
         {
-            var packet = new OutgoingAuthPacket(AuthenticationCmd.CMD_REALM_LIST);
+            var packet2 = new OutgoingAuthPacket(AuthenticationCmd.CMD_REALM_LIST);
+            packet2.Position += 2;
 
-            packet.Position += 2;
-            packet.Write(0);
-            packet.Write((byte)1);
+            packet2.Write(0); // unknown
+            packet2.Write((byte)1); // num_realms
+            packet2.Write(0); // type
+            packet2.Write((byte)0); // flags
+            packet2.WriteCString("Auuuuuub"); // realm name, null terminated
+            packet2.WriteCString("127.0.0.1:8085"); // address:port, null terminated
+            packet2.Write(0f); // population
+            packet2.Write((byte)0); // num_chars
+            packet2.Write((byte)0); // time_zone
+            packet2.Write((byte)0); // unknown
 
-            packet.Write(0); // server type
-            packet.Write((byte)0x20); // server flags
-            packet.WriteCString("AUUUB"); // server name
-            packet.WriteCString("127.0.0.1:8085"); // server ip:port
-            packet.WriteFloat(1.7f); // server population
-            packet.Write((byte)0); // char count
-            packet.Write((byte)0);
-            packet.Write((byte)0);
-            packet.Write(0x0002);
-            
-            packet.Position = 1;
-            packet.Write((short)packet.TotalLength - 3);
 
-            client.Send(packet);
+            packet2.Write((short)0x0200);
+
+            packet2.Position = 1;
+            packet2.Write((short)packet2.TotalLength - 3);
+
+            client.Send(packet2);
         }
 
-        private static void HandleLogonProof(IClient client, IncomingAuthPacket packet)
+        private static void HandleLogonProof(IAuthClient client, IncomingAuthPacket packet)
         {
             client.Authenticator.SRP.PublicEphemeralValueA = packet.ReadBigInteger(32);
             BigInteger proof = packet.ReadBigInteger(20);
-            //Console.WriteLine(client.Authenticator.SRP.IsClientProofValid(proof));
 
             SendLogonProofReply(client);
         }
 
-        private static void SendLogonProofReply(IClient client)
+        private static void SendLogonProofReply(IAuthClient client)
         {
             var packet = new OutgoingAuthPacket(AuthenticationCmd.CMD_AUTH_LOGON_PROOF);
             packet.Write((byte)0x00);
@@ -67,10 +67,10 @@
             client.Send(packet);
         }
 
-        public static void ProcessPacket(IClient client, IncomingAuthPacket packet)
+        public static void ProcessPacket(IAuthClient client, IncomingAuthPacket packet)
         {
-            var packetId = packet.packetId;
-            Action<IClient, IncomingAuthPacket> methodHandler;
+            var packetId = packet.PacketId;
+            Action<IAuthClient, IncomingAuthPacket> methodHandler;
             authActions.TryGetValue(packetId, out methodHandler);
 
             if (methodHandler != null)
@@ -83,7 +83,7 @@
             }
         }
 
-        private static void HandleLogonChallenge(IClient client, IncomingAuthPacket packet)
+        private static void HandleLogonChallenge(IAuthClient client, IncomingAuthPacket packet)
         {
             packet.Position = 33;
             var username = packet.ReadPascalString();
@@ -94,7 +94,7 @@
             SendLogonChallengeReply(client);
         }
 
-        private static void SendLogonChallengeReply(IClient client)
+        private static void SendLogonChallengeReply(IAuthClient client)
         {
             var packet = new OutgoingAuthPacket(AuthenticationCmd.CMD_AUTH_LOGON_CHALLENGE);
             packet.Write((byte)0x00);

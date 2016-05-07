@@ -70,8 +70,6 @@
             }
         }
 
-        public abstract Authenticator Authenticator { get; set; }
-
         public void BeginReceive()
         {
             this.ResumeReceive();
@@ -208,6 +206,6 @@
             }
         }
 
-        public abstract void Send(OutgoingAuthPacket packet);
+        public abstract void Send(IOutgoingPacket packet);
     }
 }

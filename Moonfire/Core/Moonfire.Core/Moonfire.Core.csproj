@@ -49,7 +49,10 @@
     <Compile Include="Networking\ClientBase.cs" />
     <Compile Include="Networking\IncomingAuthPacket.cs" />
     <Compile Include="Networking\IncomingPacket.cs" />
+    <Compile Include="Networking\Interfaces\IAuthClient.cs" />
+    <Compile Include="Networking\Interfaces\IOutgoingPacket.cs" />
     <Compile Include="Networking\Interfaces\IClient.cs" />
+    <Compile Include="Networking\Interfaces\IPacket.cs" />
     <Compile Include="Networking\Interfaces\IServer.cs" />
     <Compile Include="Networking\OutgoingAuthPacket.cs" />
     <Compile Include="Networking\OutgoingPacket.cs" />

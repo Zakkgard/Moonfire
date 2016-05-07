@@ -4,12 +4,12 @@
 
     public class IncomingAuthPacket : IncomingPacket
     {
-        public AuthenticationCmd packetId;
+        public AuthenticationCmd PacketId { get; set; }
 
         public IncomingAuthPacket(byte[] packet, int length)
             : base(packet, 0, length)
         {
-            this.packetId = (AuthenticationCmd)base.ReadByte();
+            this.PacketId = (AuthenticationCmd)base.ReadByte();
         }
     }
 }
