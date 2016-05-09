@@ -6,7 +6,7 @@
     using Moonfire.Core.Networking.Interfaces;
     using Core.Cryptography;
     using Core.Constants.Auth;
-
+    using System.Threading.Tasks;
     public class AuthClient : ClientBase, IAuthClient
     {
         public AuthClient(IServer server)
@@ -17,14 +17,12 @@
 
         public Authenticator Authenticator { get; set; }
         
-        public override bool OnReceive(byte[] buffer)
+        public override async Task OnReceive(byte[] buffer)
         {
             var packet = new IncomingAuthPacket(buffer, buffer.Length);
             Console.WriteLine("Received: {0}", packet.PacketId.ToString());
 
             AuthenticationHandler.ProcessPacket(this, packet);
-
-            return true;
         }
 
         public override void Send(IOutgoingPacket packet)

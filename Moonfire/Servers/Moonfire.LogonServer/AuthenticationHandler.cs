@@ -7,7 +7,7 @@
     using Moonfire.Core.Networking;
     using Moonfire.Core.Networking.Interfaces;
     using Moonfire.Core.Cryptography;
-
+    using System.Threading.Tasks;
     public static class AuthenticationHandler
     {
         private static Dictionary<AuthenticationCmd, Action<IAuthClient, IncomingAuthPacket>> authActions = new Dictionary<AuthenticationCmd, Action<IAuthClient, IncomingAuthPacket>>
@@ -24,27 +24,21 @@
 
         private static void LoadRealmList(IAuthClient client)
         {
-            var packet2 = new OutgoingAuthPacket(AuthenticationCmd.CMD_REALM_LIST);
-            packet2.Position += 2;
+            var packet = new OutgoingAuthPacket(AuthenticationCmd.CMD_REALM_LIST);
+            packet.Position += 2;
+            packet.Write(0); // unknown
 
-            packet2.Write(0); // unknown
-            packet2.Write((byte)1); // num_realms
-            packet2.Write(0); // type
-            packet2.Write((byte)0); // flags
-            packet2.WriteCString("Auuuuuub"); // realm name, null terminated
-            packet2.WriteCString("127.0.0.1:8085"); // address:port, null terminated
-            packet2.Write(0f); // population
-            packet2.Write((byte)0); // num_chars
-            packet2.Write((byte)0); // time_zone
-            packet2.Write((byte)0); // unknown
+            packet.Write((byte)0); // # realms, to be repalced with actual number
 
+            // realm info to be added
 
-            packet2.Write((short)0x0200);
+            packet.Write((byte)2);
+            packet.Write((byte)0);
 
-            packet2.Position = 1;
-            packet2.Write((short)packet2.TotalLength - 3);
+            packet.Position = 1; // set the stream offset to write packet size
+            packet.Write((short)packet.TotalLength - 3); // write packet size
 
-            client.Send(packet2);
+            client.Send(packet);
         }
 
         private static void HandleLogonProof(IAuthClient client, IncomingAuthPacket packet)

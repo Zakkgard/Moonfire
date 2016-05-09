@@ -19,13 +19,11 @@ namespace Moonfire.WorldServer
 
         }
 
-        public override bool OnReceive(byte[] buffer)
+        public override async Task OnReceive(byte[] buffer)
         {
             Console.WriteLine("Received something");
             //var packet = new IncomingAuthPacket(buffer, buffer.Length);
             //Console.WriteLine("Received: {0}", packet.PacketId.ToString());
-            
-            return false;
         }
 
         public override void Send(IOutgoingPacket packet)

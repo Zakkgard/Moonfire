@@ -173,28 +173,9 @@
 
         protected void StartAccepting()
         {
-            //if (acceptArgs == null)
-            //{
-            //    acceptArgs = new SocketAsyncEventArgs();
-            //    acceptArgs.Completed += new EventHandler<SocketAsyncEventArgs>(this.AcceptCompleted);
-            //}
-            //else
-            //{
-            //    acceptArgs.AcceptSocket = null;
-            //}
-
-            //var willRaiseEvent = this.Listener.AcceptAsync(acceptArgs);
-            //if (!willRaiseEvent)
-            //{
-            //    this.ProcessAccept(acceptArgs);
-            //}
-            new Thread(this.ProcessAccept).Start(200);
+            new Thread(this.ProcessAccept)
+                .Start(200);
         }
-
-        //private void AcceptCompleted(object sender, SocketAsyncEventArgs e)
-        //{
-        //    this.ProcessAccept(e);
-        //}
 
         private async void ProcessAccept(object delay)
         {

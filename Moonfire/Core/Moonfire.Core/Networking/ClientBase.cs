@@ -6,7 +6,7 @@
 
     using Moonfire.Core.Cryptography;
     using Moonfire.Core.Networking.Interfaces;
-
+    using System.Threading.Tasks;
     public abstract class ClientBase : IClient
     {
         // TODO: Get logger instance
@@ -86,7 +86,7 @@
             this.TcpSocket.ReceiveAsync(socketArgs);
         }
 
-        private void ProcessReceived(object sender, SocketAsyncEventArgs args)
+        private async void ProcessReceived(object sender, SocketAsyncEventArgs args)
         {
             try
             {
@@ -96,14 +96,15 @@
                 }
                 else
                 {
-                    if (this.OnReceive(args.Buffer))
-                    {
-                        manager.FreeBuffer(args);
-                    }
+                    //if (this.OnReceive(args.Buffer))
+                    //{
+                    //    manager.FreeBuffer(args);
+                    //}
 
                     //this.OnReceive(args.Buffer);
+                    await this.OnReceive(args.Buffer);
 
-                    this.ResumeReceive();
+                    this.TcpSocket.ReceiveAsync(args);
                 }
             }
             catch (Exception ex)
@@ -114,12 +115,12 @@
             }
             finally
             {
-                args.Completed -= this.ProcessReceived;
-                SocketArgsPool.ReleaseSocketArgs(args);
+                //args.Completed -= this.ProcessReceived;
+                //SocketArgsPool.ReleaseSocketArgs(args);
             }
         }
 
-        public abstract bool OnReceive(byte[] buffer);
+        public abstract Task OnReceive(byte[] buffer);
 
         //private void ReceiveAsyncComplete(object sender, SocketAsyncEventArgs args)
         //{
