@@ -3,10 +3,10 @@
     using System;
     using System.Net;
     using System.Net.Sockets;
-
-    using Moonfire.Core.Cryptography;
-    using Moonfire.Core.Networking.Interfaces;
     using System.Threading.Tasks;
+
+    using Moonfire.Core.Networking.Interfaces;
+    
     public abstract class ClientBase : IClient
     {
         // TODO: Get logger instance
@@ -15,7 +15,7 @@
 
         protected ClientBase(IServer server)
         {
-            this.TcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            this.tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             this.Server = server;
         }
         

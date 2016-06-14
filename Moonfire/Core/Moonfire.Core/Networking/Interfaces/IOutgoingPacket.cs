@@ -9,7 +9,7 @@ namespace Moonfire.Core.Networking.Interfaces
 {
     public interface IOutgoingPacket : IPacket
     {
-        AuthenticationCmd PacketId { get; set; }
+        object PacketId { get; set; }
 
         byte[] GetFinalizedPacket();
     }

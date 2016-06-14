@@ -5,6 +5,7 @@
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
+    using System.Threading.Tasks;
 
     using Moonfire.Core.Networking.Interfaces;
 
@@ -35,7 +36,6 @@
         }
 
         protected virtual int MaximumPendingConnections { get; set; }
-        protected Semaphore enforcer = new Semaphore(10, 10);
 
         public int ClientCount
         {
@@ -191,44 +191,21 @@
                     {
                         client.BeginReceive();
                     }
+
+                    if (this.OnClientConnected(client))
+                    {
+                        lock (this.Clients)
+                        {
+                            this.Clients.Add(client);
+                        }
+                    }
+                    else
+                    {
+                        client.TcpSocket.Shutdown(SocketShutdown.Both);
+                        client.TcpSocket.Close();
+                    }
                 }
             }
-            //try
-            //{
-            //    if (!this.IsRunning)
-            //    {
-            //        return;
-            //    }
-
-            //    IClient client = this.CreateClient();
-            //    client.TcpSocket = args.AcceptSocket;
-            //    client.BeginReceive();
-                
-            //    this.StartAccepting(args);
-
-            //    if (this.OnClientConnected(client))
-            //    {
-            //        lock (this.Clients)
-            //        {
-            //            this.Clients.Add(client);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        client.TcpSocket.Shutdown(SocketShutdown.Both);
-            //        client.TcpSocket.Close();
-            //    }
-            //}
-            //catch (SocketException e)
-            //{
-            //    // TODO: Log Exception
-            //    Console.WriteLine(e.Message);
-            //}
-            //catch (Exception e)
-            //{
-            //    // TODO: Log Exception
-            //    Console.WriteLine(e.Message);
-            //}
         }
 
         public void Dispose()

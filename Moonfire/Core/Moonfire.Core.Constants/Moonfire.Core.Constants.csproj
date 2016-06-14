@@ -47,7 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auth\AuthenticationCmd.cs" />
+    <Compile Include="LoginResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorldOpCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,4 +1,5 @@
-﻿using Moonfire.Core.Constants.Auth;
+﻿using Moonfire.Core.Constants;
+using Moonfire.Core.Constants.Auth;
 using Moonfire.Core.Networking.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,13 @@ namespace Moonfire.Core.Networking
             this.PacketId = packetId;
         }
 
-        public AuthenticationCmd PacketId { get; set; }
+        public OutgoingPacket(WorldOpCode packetId)
+            : base(new MemoryStream())
+        {
+            this.PacketId = packetId;
+        }
+
+        public object PacketId { get; set; }
 
         public int TotalLength
         {

@@ -1,12 +1,12 @@
 ﻿namespace Moonfire.LogonServer
 {
     using System;
+    using System.Threading.Tasks;
 
+    using Moonfire.Core.Cryptography;
     using Moonfire.Core.Networking;
     using Moonfire.Core.Networking.Interfaces;
-    using Core.Cryptography;
-    using Core.Constants.Auth;
-    using System.Threading.Tasks;
+
     public class AuthClient : ClientBase, IAuthClient
     {
         public AuthClient(IServer server)
@@ -28,7 +28,7 @@
         public override void Send(IOutgoingPacket packet)
         {
             var bytePacket = packet.GetFinalizedPacket();
-            Console.WriteLine("Client sent {0}", packet.PacketId.ToString());
+            Console.WriteLine("Sent {0}", packet.PacketId.ToString());
             this.Send(bytePacket, 0, bytePacket.Length);
         }
     }

@@ -7,7 +7,7 @@
     using Moonfire.Core.Networking;
     using Moonfire.Core.Networking.Interfaces;
     using Moonfire.Core.Cryptography;
-    using System.Threading.Tasks;
+    
     public static class AuthenticationHandler
     {
         private static Dictionary<AuthenticationCmd, Action<IAuthClient, IncomingAuthPacket>> authActions = new Dictionary<AuthenticationCmd, Action<IAuthClient, IncomingAuthPacket>>
@@ -28,12 +28,18 @@
             packet.Position += 2;
             packet.Write(0); // unknown
 
-            packet.Write((byte)0); // # realms, to be repalced with actual number
+            packet.Write((byte)1); // # realms, to be repalced with actual number
 
-            // realm info to be added
+            packet.Write(0);
+            packet.WriteByte(0x40);
+            packet.WriteCString("Auuuuuub");
+            packet.WriteCString("127.0.0.1:8085");
+            packet.WriteFloat(2);
+            packet.WriteByte(0x00);
+            packet.WriteByte(0x01);
+            packet.WriteByte(0x00);
 
-            packet.Write((byte)2);
-            packet.Write((byte)0);
+            packet.Write((short)0x0002);
 
             packet.Position = 1; // set the stream offset to write packet size
             packet.Write((short)packet.TotalLength - 3); // write packet size
@@ -55,8 +61,6 @@
             packet.Write((byte)0x00);
             packet.WriteBigInt(client.Authenticator.SRP.ServerSessionKeyProof, 20);
             packet.WriteInt(0);
-            packet.WriteInt(0);
-            packet.WriteShort(0);
 
             client.Send(packet);
         }

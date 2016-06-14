@@ -1,15 +1,15 @@
-﻿using Moonfire.Core.Networking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Moonfire.Core.Networking.Interfaces;
-
-namespace Moonfire.WorldServer
+﻿namespace Moonfire.WorldServer
 {
-    class WorldServer : ServerBase
+    using System;
+    using System.Collections.Generic;
+
+    using Moonfire.Core.Networking;
+    using Moonfire.Core.Networking.Interfaces;
+    using System.Collections.Concurrent;
+    public class WorldServer : ServerBase
     {
+        public readonly byte[] Seed = BitConverter.GetBytes(new Random().Next());
+
         public WorldServer()
         {
             this.Clients = new HashSet<IClient>();
@@ -18,6 +18,13 @@ namespace Moonfire.WorldServer
         protected override IClient CreateClient()
         {
             return new RealmClient(this);
+        }
+
+        protected override bool OnClientConnected(IClient client)
+        {
+            base.OnClientConnected(client);
+            LoginHandler.SendAuthChallenge(client);
+            return true;
         }
     }
 }
