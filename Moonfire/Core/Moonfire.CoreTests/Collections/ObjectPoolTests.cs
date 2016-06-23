@@ -30,10 +30,8 @@ namespace Moonfire.Core.Collections.Tests
         [TestMethod]
         public void ShouldReturnEmptyStringWhenAskedTwice()
         {
-            String result = sut.GetObject();
-
-            Assert.AreEqual("", result);
-            Assert.AreEqual("", result);
+            Assert.AreEqual("", sut.GetObject());
+            Assert.AreEqual("", sut.GetObject());
         }
 
         [TestMethod]
