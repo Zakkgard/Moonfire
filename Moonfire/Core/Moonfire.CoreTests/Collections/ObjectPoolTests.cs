@@ -11,18 +11,18 @@ namespace Moonfire.Core.Collections.Tests
     [TestClass()]
     public class ObjectPoolTests
     {
-        private ObjectPool<String> sut;
+        private ObjectPool<string> sut;
 
         [TestInitialize]
         public void Setup()
         {
-            sut = new ObjectPool<String>(() => "");
+            sut = new ObjectPool<string>(() => "");
         }
 
         [TestMethod]
         public void ShouldReturnEmptyStringIfNothingWasIn()
         {
-            String result = sut.GetObject();
+            string result = sut.GetObject();
 
             Assert.AreEqual("", result);
         }
