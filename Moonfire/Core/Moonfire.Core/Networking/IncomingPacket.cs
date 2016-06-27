@@ -7,7 +7,7 @@
     using System.Text;
 
     using Moonfire.Core.Cryptography;
-    using Interfaces;
+    using Moonfire.Core.Networking.Interfaces;
 
     public abstract class IncomingPacket : BinaryReader, IPacket
     {

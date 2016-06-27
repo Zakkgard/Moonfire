@@ -1,12 +1,7 @@
-﻿using Moonfire.Core.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Moonfire.Core.Networking
+﻿namespace Moonfire.Core.Networking
 {
+    using Moonfire.Core.Constants;
+
     public class IncomingRealmPacket : IncomingPacket
     {
         public IncomingRealmPacket(byte[] packet, int length) 

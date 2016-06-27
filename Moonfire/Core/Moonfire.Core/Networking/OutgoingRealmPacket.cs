@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Moonfire.Core.Constants;
-using Moonfire.Core.Constants.Auth;
-
-namespace Moonfire.Core.Networking
+﻿namespace Moonfire.Core.Networking
 {
+    using Moonfire.Core.Constants;
+
     public class OutgoingRealmPacket : OutgoingPacket
     {
         public OutgoingRealmPacket(WorldOpCode opcode) 

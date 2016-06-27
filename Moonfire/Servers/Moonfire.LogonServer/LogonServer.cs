@@ -1,13 +1,10 @@
-﻿using Moonfire.Core.Networking;
-using Moonfire.Core.Networking.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Moonfire.LogonServer
+﻿namespace Moonfire.LogonServer
 {
+    using System.Collections.Generic;
+
+    using Moonfire.Core.Networking;
+    using Moonfire.Core.Networking.Interfaces;
+
     public class LogonServer : ServerBase
     {
         public LogonServer()

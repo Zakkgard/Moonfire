@@ -5,7 +5,7 @@
 
     using Moonfire.Core.Networking;
     using Moonfire.Core.Networking.Interfaces;
-    using System.Collections.Concurrent;
+    
     public class WorldServer : ServerBase
     {
         public readonly byte[] Seed = BitConverter.GetBytes(new Random().Next());

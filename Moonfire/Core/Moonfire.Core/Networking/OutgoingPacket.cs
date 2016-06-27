@@ -1,15 +1,11 @@
-﻿using Moonfire.Core.Constants;
-using Moonfire.Core.Constants.Auth;
-using Moonfire.Core.Networking.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Moonfire.Core.Networking
+﻿namespace Moonfire.Core.Networking
 {
+    using System.IO;
+
+    using Moonfire.Core.Constants;
+    using Moonfire.Core.Constants.Auth;
+    using Moonfire.Core.Networking.Interfaces;
+
     public class OutgoingPacket : PacketWriter, IOutgoingPacket
     {
         public OutgoingPacket(AuthenticationCmd packetId)

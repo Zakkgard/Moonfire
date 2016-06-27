@@ -1,13 +1,8 @@
-﻿using Moonfire.LogonServer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Moonfire.WorldServer
+﻿namespace Moonfire.WorldServer
 {
+    using System;
+    using System.Net;
+
     class Program
     {
         static void Main(string[] args)

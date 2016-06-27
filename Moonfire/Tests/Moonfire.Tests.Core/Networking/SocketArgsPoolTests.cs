@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Net.Sockets;
-
-namespace Moonfire.Core.Networking.Tests
+﻿namespace Moonfire.Core.Networking.Tests
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System.Net.Sockets;
+
     [TestClass()]
     public class SocketArgsPoolTests
     {
