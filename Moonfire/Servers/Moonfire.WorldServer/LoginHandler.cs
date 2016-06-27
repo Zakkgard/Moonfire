@@ -42,9 +42,7 @@
             //packet.WriteBigInt(SecureRemotePassword.RandomNumber(16));
             packet.Position = 0;
             packet.WriteUShortBE((ushort)(packet.TotalLength - 2));
-
-            //var packet = new byte[] { 0, 38, 236, 1, 82, 98, 99, 225, 253, 126, 188, 160, 125, 75, 171, 52, 206, 10, 219, 112, 74, 185, 181, 176, 149, 85, 0, 177, 231, 143, 213, 82, 66, 50, 50, 63, 117, 237, 248, 211 };
-
+            
             client.Send(packet);
         }
 
