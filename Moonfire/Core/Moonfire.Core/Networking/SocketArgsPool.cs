@@ -30,10 +30,10 @@
             args.DisconnectReuseSocket = false;
             args.RemoteEndPoint = null;
             args.SendPacketsElements = null;
-            args.SendPacketsFlags = 0;
+            args.SendPacketsFlags = TransmitFileOptions.UseDefaultWorkerThread;
             args.SendPacketsSendSize = 0;
-            args.SocketError = 0;
-            args.SocketFlags = 0;
+            args.SocketError = SocketError.Success;
+            args.SocketFlags = SocketFlags.None;
             args.UserToken = null;
         }
     }
